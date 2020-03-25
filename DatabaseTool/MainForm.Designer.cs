@@ -71,7 +71,7 @@
             this.splitContainerControl1.Panel2.Controls.Add(this.xtraTabControl);
             this.splitContainerControl1.Panel2.Text = "Panel2";
             this.splitContainerControl1.Size = new System.Drawing.Size(1218, 638);
-            this.splitContainerControl1.SplitterPosition = 430;
+            this.splitContainerControl1.SplitterPosition = 674;
             this.splitContainerControl1.TabIndex = 0;
             this.splitContainerControl1.Text = "splitContainerControl1";
             // 
@@ -81,17 +81,17 @@
             this.groupControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupControl.Location = new System.Drawing.Point(0, 0);
             this.groupControl.Name = "groupControl";
-            this.groupControl.Size = new System.Drawing.Size(430, 638);
+            this.groupControl.Size = new System.Drawing.Size(674, 638);
             this.groupControl.TabIndex = 0;
             this.groupControl.Text = "数据库";
             // 
             // gridControl
             // 
             this.gridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gridControl.Location = new System.Drawing.Point(2, 21);
+            this.gridControl.Location = new System.Drawing.Point(2, 23);
             this.gridControl.MainView = this.gridView;
             this.gridControl.Name = "gridControl";
-            this.gridControl.Size = new System.Drawing.Size(426, 615);
+            this.gridControl.Size = new System.Drawing.Size(670, 613);
             this.gridControl.TabIndex = 0;
             this.gridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridView});
@@ -139,7 +139,7 @@
             this.xtraTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.xtraTabControl.Location = new System.Drawing.Point(0, 0);
             this.xtraTabControl.Name = "xtraTabControl";
-            this.xtraTabControl.Size = new System.Drawing.Size(783, 638);
+            this.xtraTabControl.Size = new System.Drawing.Size(534, 638);
             this.xtraTabControl.TabIndex = 0;
             // 
             // databaseServerBindingSource
@@ -152,10 +152,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1222, 642);
             this.Controls.Add(this.panelControl1);
+            this.IconOptions.ShowIcon = false;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "MainForm";
-            this.ShowIcon = false;
             this.Text = "DatabaseTool";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);

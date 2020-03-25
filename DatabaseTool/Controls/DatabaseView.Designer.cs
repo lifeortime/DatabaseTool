@@ -34,6 +34,7 @@
             this.panelControl2 = new DevExpress.XtraEditors.PanelControl();
             this.splitContainerControl3 = new DevExpress.XtraEditors.SplitContainerControl();
             this.txt_Sql = new DevExpress.XtraEditors.MemoEdit();
+            this.updateArea = new System.Windows.Forms.Button();
             this.btn_ExecuteSelected = new DevExpress.XtraEditors.SimpleButton();
             this.btn_ExecuteAll = new DevExpress.XtraEditors.SimpleButton();
             this.checkEdit = new DevExpress.XtraEditors.CheckEdit();
@@ -115,12 +116,13 @@
             this.splitContainerControl3.Name = "splitContainerControl3";
             this.splitContainerControl3.Panel1.Controls.Add(this.txt_Sql);
             this.splitContainerControl3.Panel1.Text = "Panel1";
+            this.splitContainerControl3.Panel2.Controls.Add(this.updateArea);
             this.splitContainerControl3.Panel2.Controls.Add(this.btn_ExecuteSelected);
             this.splitContainerControl3.Panel2.Controls.Add(this.btn_ExecuteAll);
             this.splitContainerControl3.Panel2.Controls.Add(this.checkEdit);
             this.splitContainerControl3.Panel2.Text = "Panel2";
             this.splitContainerControl3.Size = new System.Drawing.Size(796, 145);
-            this.splitContainerControl3.SplitterPosition = 586;
+            this.splitContainerControl3.SplitterPosition = 484;
             this.splitContainerControl3.TabIndex = 0;
             this.splitContainerControl3.Text = "splitContainerControl3";
             // 
@@ -129,8 +131,18 @@
             this.txt_Sql.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txt_Sql.Location = new System.Drawing.Point(0, 0);
             this.txt_Sql.Name = "txt_Sql";
-            this.txt_Sql.Size = new System.Drawing.Size(586, 145);
+            this.txt_Sql.Size = new System.Drawing.Size(484, 145);
             this.txt_Sql.TabIndex = 0;
+            // 
+            // updateArea
+            // 
+            this.updateArea.Location = new System.Drawing.Point(183, 41);
+            this.updateArea.Name = "updateArea";
+            this.updateArea.Size = new System.Drawing.Size(75, 23);
+            this.updateArea.TabIndex = 3;
+            this.updateArea.Text = "更新区域树统计";
+            this.updateArea.UseVisualStyleBackColor = true;
+            this.updateArea.Click += new System.EventHandler(this.updateArea_Click);
             // 
             // btn_ExecuteSelected
             // 
@@ -155,7 +167,7 @@
             this.checkEdit.Location = new System.Drawing.Point(16, 4);
             this.checkEdit.Name = "checkEdit";
             this.checkEdit.Properties.Caption = "所有选中服务器";
-            this.checkEdit.Size = new System.Drawing.Size(111, 19);
+            this.checkEdit.Size = new System.Drawing.Size(111, 20);
             this.checkEdit.TabIndex = 0;
             this.checkEdit.CheckStateChanged += new System.EventHandler(this.checkEdit_CheckStateChanged);
             // 
@@ -169,7 +181,7 @@
             this.splitContainerControl2.Panel1.Text = "Panel1";
             this.splitContainerControl2.Panel2.Controls.Add(this.txt_Log);
             this.splitContainerControl2.Panel2.Text = "Panel2";
-            this.splitContainerControl2.Size = new System.Drawing.Size(800, 372);
+            this.splitContainerControl2.Size = new System.Drawing.Size(800, 367);
             this.splitContainerControl2.SplitterPosition = 287;
             this.splitContainerControl2.TabIndex = 0;
             this.splitContainerControl2.Text = "splitContainerControl2";
@@ -195,7 +207,7 @@
             this.txt_Log.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txt_Log.Location = new System.Drawing.Point(0, 0);
             this.txt_Log.Name = "txt_Log";
-            this.txt_Log.Size = new System.Drawing.Size(800, 80);
+            this.txt_Log.Size = new System.Drawing.Size(800, 70);
             this.txt_Log.TabIndex = 0;
             // 
             // layoutControlGroup1
@@ -264,5 +276,6 @@
         private DevExpress.XtraEditors.SimpleButton btn_ExecuteAll;
         private DevExpress.XtraEditors.CheckEdit checkEdit;
         private DevExpress.XtraEditors.SimpleButton btn_ExecuteSelected;
+        private System.Windows.Forms.Button updateArea;
     }
 }
