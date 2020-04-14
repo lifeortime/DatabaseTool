@@ -104,81 +104,38 @@ namespace DatabaseTool.Controls
             {
                 try
                 {
-                    var sql = "SELECT 编码,父级 from 基础_结构_区域";
+                    var sql = "SELECT 编码,父级,通道合计,设备合计 from 基础_结构_区域";
                     var result = session.ExecuteQuery(sql);
                     PrintLog($"数据行数={result.ResultSet.Count()}");
-                    var data = SelectDataToList(result);
-                    //var filterData = data.Where(x => x.通道合计 <= 0 || x.设备合计 <= 0).ToList();
-                    var filterSql = $@"SELECT 编码,父级 from 基础_结构_区域 where 编码 in (SELECT 区域编码 from 基础_通道 GROUP BY 区域编码) and (通道合计<=0 or 设备合计<=0 or 通道在线<=0 or 设备在线<=0)";
-                    var filterData = session.ExecuteQuery(filterSql);
-                    var filterList = SelectDataToList(filterData);
-                    PrintLog($"存在通道设备合计<=0的数量：{filterList.Count}");
-                    if (filterList.Count <= 0) return;
-                    var total = new List<TreeNode>();//统计后的数据
-                    var parentNode = new List<string>();
-                    foreach (var item in filterList)
+                    foreach (var item in result.ResultSet[0].Rows)
                     {
-                        if (parentNode.Count <= 0)
-                        {
-                            GetParents(item.ParentId, data, ref parentNode);
-                        }
+                        var updateSql = $@"Update 基础_结构_区域 set 通道合计=(select count(0) from 基础_通道 where 区域编码='{item.Values[0]}')
+                        ,设备合计=(select count(1) from 基础_设备 where 区域编码='{item.Values[0]}') where 编码='{item.Values[0]}'";
+                        var count = session.ExecuteNonQuery(updateSql);
+                        PrintLog($"更新：{count}");
+                    }
+                    result = session.ExecuteQuery(sql);
+                    var srcRegions = SelectDataToList(result);
 
-                        var sqlStr = $@"SELECT nvl(max(通道合计),0) 通道合计,
-nvl(max(通道在线),0) 通道在线,
-nvl(max(通道异常),0) 通道异常,
-nvl(max(设备合计),0) 设备合计,
-nvl(max(设备在线),0) 设备在线,
-nvl(max(设备异常),0) 设备异常 from (
-SELECT count(0) 通道合计,sum(case when 综合状态=2 then 1 else 0 end) 通道在线,sum(case when 综合状态=1 then 1 else 0 end) 通道异常,0 设备合计,0 设备在线,0 设备异常 from 基础_通道 where 区域编码='{item.Id}'
-UNION
-SELECT 0 通道合计,0 通道在线,0 通道异常,count(0) 设备合计,sum(case when 综合状态=2 then 1 else 0 end) 设备在线,sum(case when 综合状态=1 then 1 else 0 end) 设备异常 from 基础_设备 where 区域编码='{item.Id}') a
-";//
-                        var childCount = session.ExecuteQuery(sqlStr);
-                        if (childCount.ResultSet.Count() > 0)
-                        {
-                            var channelTotal = Convert.ToInt32(childCount.ResultSet[0].Rows[0].Values[0]);
-                            var channelOnline = Convert.ToInt32(childCount.ResultSet[0].Rows[0].Values[1]);
-                            var channelBroken = Convert.ToInt32(childCount.ResultSet[0].Rows[0].Values[2]);
-                            var deviceTotal = Convert.ToInt32(childCount.ResultSet[0].Rows[0].Values[3]);
-                            var deviceOnline = Convert.ToInt32(childCount.ResultSet[0].Rows[0].Values[4]);
-                            var deviceBroken = Convert.ToInt32(childCount.ResultSet[0].Rows[0].Values[5]);
-                            if (channelTotal > 0 || deviceTotal > 0 || channelOnline > 0 || channelBroken > 0 || deviceOnline > 0 || deviceBroken > 0)
-                            {
-                                PrintLog($"区域编码：{item.Id},通道合计：{channelTotal},设备合计：{deviceTotal},通道在线：{channelOnline},通道异常：{channelBroken},设备在线：{deviceOnline},设备异常：{deviceBroken}");
-                                var node = new TreeNode(item.Id, item.ParentId, channelTotal, channelOnline, channelBroken, deviceTotal, deviceOnline, deviceBroken);
-                                total.Add(node);
-                                var updateSql = $@"update 基础_结构_区域 set 通道合计={channelTotal},通道异常={channelBroken},通道在线={channelOnline},
-                                        设备合计={deviceTotal},设备异常={deviceBroken},设备在线={deviceOnline} where 编码='{item.Id}'";
-                                var count = session.ExecuteNonQuery(updateSql);
-                                PrintLog($"更新区域【{item.Id}】的通道设备合计，受影响行数={count}");
-                            }
-                            else
-                            {
-                                PrintLog($"该区域编码【{item.Id}】下，通道设备合计为0");
-                            }
-                        }
-                        else
-                        {
-                            PrintLog($"该区域编码【{item.Id}】下，通道设备合计为0");
-                        }
-                    }
-                    foreach (var item in parentNode)
+                    var root = srcRegions.GenerateTree(c => c.Id, c => c.ParentId, "0").FirstOrDefault();
+                    if (root == null)
                     {
-                        if (total.Count > 0)
-                        {
-                            var channelTotal = total.Sum(x => x.通道合计);
-                            var channelOnline = total.Sum(x => x.通道在线);
-                            var channelBroken = total.Sum(x => x.通道异常);
-                            var deviceTotal = total.Sum(x => x.设备合计);
-                            var deviceOnline = total.Sum(x => x.设备在线);
-                            var deviceBroken = total.Sum(x => x.设备异常);
-                            PrintLog($"区域编码：{item},通道合计：{channelTotal},设备合计：{deviceTotal},通道在线：{channelOnline},通道异常：{channelBroken},设备在线：{deviceOnline},设备异常：{deviceBroken}");
-                            var updateSql = $@"update 基础_结构_区域 set 通道合计={channelTotal},通道异常={channelBroken},通道在线={channelOnline},
-                                        设备合计={deviceTotal},设备异常={deviceBroken},设备在线={deviceOnline} where 编码='{item}'";
-                            var count = session.ExecuteNonQuery(updateSql);
-                            PrintLog($"更新区域【{item}】的通道设备合计，受影响行数={count}");
-                        }
+                        PrintLog("未找到 编码=0 的根节点");
+                        return;
                     }
+
+                    root.Recursive((p, c) =>//重新计算整个树结构上的 设备合计、通道合计
+                    {
+                        p.设备合计 += c.设备合计;
+                        p.通道合计 += c.通道合计;
+
+                        var updateSql = $@"update 基础_结构_区域 set 通道合计={p.通道合计},
+                                        设备合计={p.设备合计} where 编码='{p.Id}'";
+
+                        var count = session.ExecuteNonQuery(updateSql);
+                        PrintLog($"更新区域【{p.Id}】的通道设备合计，受影响行数={count}");
+                    });
+                    PrintLog("区域 通道合计 与 设备合计 数量已重新计算");
                 }
                 catch (Exception ex)
                 {
@@ -196,43 +153,20 @@ SELECT 0 通道合计,0 通道在线,0 通道异常,count(0) 设备合计,sum(ca
             {
                 foreach (var item in selectedData.ResultSet[0].Rows)
                 {
+                    if (Convert.ToInt32(item.Values[2]) > 0)
+                    {
+
+                    }
                     list.Add(new TreeNode()
                     {
                         Id = item.Values[0].ToString(),
-                        ParentId = item.Values[1].ToString()
+                        ParentId = item.Values[1].ToString(),
+                        通道合计 = Convert.ToInt32(item.Values[2]),
+                        设备合计 = Convert.ToInt32(item.Values[3])
                     });
                 }
             }
             return list;
-        }
-
-        /// <summary>
-        /// 递归查询子级ID,包含自己
-        /// </summary>
-        /// <param name="id">ID</param>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        private void GetChilds(string id, List<TreeNode> list, ref List<string> childNode)
-        {
-            childNode.Add(id);
-            List<TreeNode> result = list.Where(x => x.ParentId == id).ToList();
-            if (result.Count > 0) GetChilds(result[0].Id, list, ref childNode);
-        }
-
-        /// <summary>
-        /// 递归查询父级ID
-        /// </summary>
-        /// <param name="parentId">parentId</param>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        private void GetParents(string parentId, List<TreeNode> list, ref List<string> parentNode)
-        {
-            List<TreeNode> result = list.Where(x => x.Id == parentId).ToList();
-            if (result.Count > 0)
-            {
-                parentNode.Add(parentId);
-                GetParents(result[0].ParentId, list, ref parentNode);
-            }
         }
 
         public class TreeNode

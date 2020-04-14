@@ -160,6 +160,7 @@
     <Compile Include="EventBus\CommandBase.cs" />
     <Compile Include="EventBus\EventBusFactory.cs" />
     <Compile Include="EventBus\RemoteExecuteCommand.cs" />
+    <Compile Include="GenericHelpers.cs" />
     <Compile Include="JsonHelper.cs" />
     <Compile Include="LogHelper.cs" />
     <Compile Include="MainForm.cs">
